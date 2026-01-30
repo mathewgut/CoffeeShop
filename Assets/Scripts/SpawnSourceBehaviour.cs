@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 
@@ -12,6 +13,7 @@ public class SpawnSourceBehaviour : MonoBehaviour
     public List<GameObject> spawnedItems = new List<GameObject> {};
     public bool maxSpawnFlag = false;
     int tick = 0;
+    int fixedTick = 0;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -26,8 +28,15 @@ public class SpawnSourceBehaviour : MonoBehaviour
 
         if (tick % 4 == 0)
         {
-            CheckSpawnCount();
+            // CheckSpawnCount(); <-- too hard to track across abstracted components, removing for simplicity
         }
+
+    }
+
+    private void FixedUpdate()
+    {
+        fixedTick += 1;
+
 
     }
 

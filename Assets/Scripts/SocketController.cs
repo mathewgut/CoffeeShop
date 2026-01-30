@@ -1,15 +1,31 @@
+using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 
 public class SocketController : MonoBehaviour
 {
+    public enum SocketType
+    {
+        Fuel,
+        Hold
+    }
+
+    [SerializeField] private SocketType _socketType;
+
     public PickupInteraction playerInteraction;
     public GameObject player;
-
+    public List<string> allowedInputs = new List<string> { };
+    
     bool hasItem = false;
     bool inBoundry = false;
 
     GameObject inBoundryItem;
-    GameObject attachedItem;
+    public GameObject attachedItem;
+
+    public float currentFuel = 0;
+    public float maxFuel = 9;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -20,14 +36,14 @@ public class SocketController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {   
-        if (inBoundry && !hasItem && inBoundryItem.GetComponent<PickupBehaviour>().wontAttatch == false)
+        if (inBoundry && !hasItem && inBoundryItem != null&& inBoundryItem.GetComponent<PickupBehaviour>().wontAttatch == false)
         {
             AttachItem();
         }
 
         if (hasItem && attachedItem.transform.parent == player.transform)
         {
-            DetachItem();
+            DetachItem(() => { });
         }
     }
 
@@ -61,33 +77,66 @@ public class SocketController : MonoBehaviour
     {
         return item.transform.parent == player;
     }
+    
 
-    void AttachItem() {
+    void AttachItem()
+    {
         attachedItem = inBoundryItem;
 
-        if (playerInteraction.heldItem)
+        // gets the prefab reference from the object and checks it against the prefab within the allowed
+        if (allowedInputs.Count > 0 && allowedInputs.Contains(attachedItem.GetComponent<PickupBehaviour>().id) || allowedInputs.Count == 0)
         {
-            playerInteraction.DropItem(() =>
+            attachedItem.transform.rotation = Quaternion.Euler(new Vector3(0,0,0));
+
+            if (playerInteraction.heldItem)
+            {
+                playerInteraction.DropItem(() =>
+                {
+                    attachedItem.transform.position = transform.position;
+                    attachedItem.transform.SetParent(transform);
+                });
+            }
+            else
             {
                 attachedItem.transform.position = transform.position;
                 attachedItem.transform.SetParent(transform);
-            });
+                
+            }
+
+            attachedItem.GetComponent<Rigidbody>().isKinematic = true;
+            hasItem = true;
+            AttachAction();
         }
         else
         {
-            attachedItem.transform.position = transform.position;
-            attachedItem.transform.SetParent(transform);
+            attachedItem = null;
         }
-
-        attachedItem.GetComponent<Rigidbody>().isKinematic = true;
-        
-        hasItem = true;
     }
-    void DetachItem ()
+    void DetachItem (System.Action? onDetatch = null)
     {
         hasItem = false;
         attachedItem.GetComponent<PickupBehaviour>().wontAttatch = true;
+        onDetatch();
         attachedItem = null;
+    }
+
+    void AttachAction()
+    {
+        if(_socketType == SocketType.Fuel)
+        {
+            float itemFuel = attachedItem.GetComponent<FuelItem>().fuelAmount;
+
+            if (currentFuel < maxFuel)
+            {
+                currentFuel = Mathf.Clamp(itemFuel + currentFuel, 0, maxFuel);
+                DetachItem(() => {Destroy(attachedItem); inBoundryItem = null; inBoundry = false; });
+            }
+            else
+            {
+                DetachItem();
+            }
+            
+        }
     }
 
 }
