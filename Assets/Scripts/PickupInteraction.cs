@@ -37,7 +37,8 @@ public class PickupInteraction : MonoBehaviour
                 {
                     PickupItem();
                 }
-                else if (hit.transform.CompareTag("SpawnSource"))
+                else if (Physics.Raycast(MainCamera.transform.position, MainCamera.transform.forward, out hit, maxInteractRange) &&
+                    hit.transform.CompareTag("SpawnSource"))
                 {
                     SpawnSourceBehaviour sourceScript = hit.transform.GetComponent<SpawnSourceBehaviour>();
 

@@ -5,7 +5,8 @@ public class PickupBehaviour : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
 
     public bool wontAttatch = false;
-    public string id;
+    public string id; // hard to match clones to prefab references inexpensively, this is (imo) the best alternative
+
 
     void Start()
     {

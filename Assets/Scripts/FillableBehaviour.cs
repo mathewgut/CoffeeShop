@@ -6,12 +6,11 @@ public class FillableBehaviour : MonoBehaviour
     public float maxAmount = 1.0f;
     public float currentAmount = 0f;
     public Slider fillBar;
-
+    public Vector3 upright;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-
         fillBar.maxValue = maxAmount;
     }
 
@@ -25,5 +24,7 @@ public class FillableBehaviour : MonoBehaviour
     {
         fillBar.transform.LookAt(Camera.main.transform);
     }
+
+    
 }
 

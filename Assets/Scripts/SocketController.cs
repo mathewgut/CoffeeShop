@@ -27,6 +27,8 @@ public class SocketController : MonoBehaviour
     public float currentFuel = 0;
     public float maxFuel = 9;
 
+    public AudioSource onFillSound;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -43,7 +45,7 @@ public class SocketController : MonoBehaviour
 
         if (hasItem && attachedItem.transform.parent == player.transform)
         {
-            DetachItem(() => { });
+            DetachItem(() => { }); // im not 100% sure you need to specify some kind of void to work, but got errors otherwise so idk
         }
     }
 
@@ -86,10 +88,19 @@ public class SocketController : MonoBehaviour
         // gets the prefab reference from the object and checks it against the prefab within the allowed
         if (allowedInputs.Count > 0 && allowedInputs.Contains(attachedItem.GetComponent<PickupBehaviour>().id) || allowedInputs.Count == 0)
         {
-            attachedItem.transform.rotation = Quaternion.Euler(new Vector3(0,0,0));
+            // since i am not creating my own models, sometimes the orientations can be weird, set a default in script and check if default exists
+            if(attachedItem.TryGetComponent<FillableBehaviour>(out FillableBehaviour fillableScript))
+            {
+                attachedItem.transform.rotation = Quaternion.Euler(fillableScript.upright);
+            }
+            else
+            {
+                attachedItem.transform.rotation = Quaternion.identity;
+            }
 
             if (playerInteraction.heldItem)
             {
+                // perform actions beforing null-ing reference
                 playerInteraction.DropItem(() =>
                 {
                     attachedItem.transform.position = transform.position;
@@ -129,13 +140,15 @@ public class SocketController : MonoBehaviour
             if (currentFuel < maxFuel)
             {
                 currentFuel = Mathf.Clamp(itemFuel + currentFuel, 0, maxFuel);
-                DetachItem(() => {Destroy(attachedItem); inBoundryItem = null; inBoundry = false; });
             }
-            else
-            {
-                DetachItem();
-            }
-            
+
+            onFillSound.Play();
+
+            DetachItem(() => {
+                Destroy(attachedItem); 
+                inBoundryItem = null; 
+                inBoundry = false; 
+            });
         }
     }
 
