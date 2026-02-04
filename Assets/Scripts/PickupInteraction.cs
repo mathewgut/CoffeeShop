@@ -11,6 +11,8 @@ public class PickupInteraction : MonoBehaviour
     public float HoldDistance = 5f;
     public float throwForce = 15f;
 
+    public bool isVR = false;
+
     public GameObject heldItem = null;
     Camera MainCamera;
 
@@ -29,6 +31,10 @@ public class PickupInteraction : MonoBehaviour
     {
         if (tick % 4 == 0)
         {
+            if (isVR)
+            {
+                return;
+            }
 
             if (Input.GetKeyDown(KeyCode.E) && !heldItem)
             {

@@ -40,6 +40,8 @@ public class SocketController : MonoBehaviour
     {   
         if (inBoundry && !hasItem && inBoundryItem != null&& inBoundryItem.GetComponent<PickupBehaviour>().wontAttatch == false)
         {
+
+            Debug.Log("condition met");
             AttachItem();
         }
 
@@ -55,6 +57,8 @@ public class SocketController : MonoBehaviour
     {
         if (other.gameObject.CompareTag(playerInteraction.pickupTag))
         {
+
+            Debug.Log("entered");
             inBoundryItem = other.gameObject;
             inBoundry = true;
         }
@@ -62,6 +66,7 @@ public class SocketController : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
+        Debug.Log("exited");
         if (other.gameObject == inBoundryItem)
         {
             inBoundryItem = null;

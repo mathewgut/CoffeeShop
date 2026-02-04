@@ -18,8 +18,11 @@ public class CustomerController : MonoBehaviour
     int coffeeCount;
     public bool orderComplete = false;
 
-    public ParticleSystem bloodParticles;
+    public AudioSource audioOutput;
+    bool madeEnteranceSound = false;
 
+    public AudioClip consumeSound;
+    public List<AudioClip> enteranceSounds = new List<AudioClip> { };
 
     NavMeshAgent agent;
     void Start()
@@ -38,10 +41,20 @@ public class CustomerController : MonoBehaviour
             agent.destination = target.transform.position;
         }
 
+        // if at target position
         if (agent.transform.position.x == target.transform.position.x && // y position is inheriently different between the empty and ai
             agent.transform.position.z == target.transform.position.z)
         {
             orderUI.gameObject.SetActive(true);
+
+            if (!madeEnteranceSound)
+            {
+                audioOutput.clip = RandomEnteranceSound();
+                audioOutput.Play();
+                madeEnteranceSound = true;
+            }
+
+            
         }
 
         orderUI.transform.LookAt(Camera.main.transform);
@@ -84,6 +97,11 @@ public class CustomerController : MonoBehaviour
     void UpdateUI()
     {
         orderQuantity.text = "x" + coffeeCount.ToString();  // e.g wants coffee x3
+    }
+
+    AudioClip RandomEnteranceSound ()
+    {
+        return enteranceSounds[UnityEngine.Random.Range(0, enteranceSounds.Count)];
     }
 
 }

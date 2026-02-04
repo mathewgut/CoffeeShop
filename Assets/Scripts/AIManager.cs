@@ -10,13 +10,18 @@ public class AIManager : MonoBehaviour
 
     public AudioSource splatSource;
     public AudioSource specialSource;
+    public AudioSource speakSource;
+
     public ParticleSystem bloodParticles;
+
+    public List<AudioClip> exitSounds = new List<AudioClip> { };
 
     Transform chosenSpawn;
     GameObject agentInstance;
 
     float bloodTimeStart;
     float destroyTimeStart;
+    float explosionInterval;
 
 
     int tick;
@@ -37,37 +42,60 @@ public class AIManager : MonoBehaviour
     {
         tick += 1;
 
-        if(tick % 4 == 0)
+        if (tick % 4 != 0)
         {
-            if(agentInstance.TryGetComponent<CustomerController>(out CustomerController customer))
-            {
-                if (customer.orderComplete)
-                {
-                    if(destroyTimeStart == -1)
-                    {
-                        destroyTimeStart = Time.time;
-                    }
+            return;
+        }
 
-                    if (!specialSource.isPlaying)
-                    {
-                        specialSource.Play();
-                    }
-                    
-                    
-                    if (Time.time - destroyTimeStart >= 0.15f)
-                    {
-                        bloodParticles.Play();
+        if(agentInstance.TryGetComponent<CustomerController>(out CustomerController customer))
+        {
+            speakSource.transform.position = agentInstance.transform.position;
+
+            if (customer.orderComplete)
+            {
+                if(destroyTimeStart == -1)
+                {
+                    destroyTimeStart = Time.time;
+                }
+
+                if (explosionInterval == -1)
+                {
+                    explosionInterval = UnityEngine.Random.Range(1, 1.45f);
+                }
+
+                if (!speakSource.isPlaying)
+                {
+                    speakSource.clip = RandomExitSound();
+                    speakSource.Play();
                         
-                        splatSource.Play();
-                        Destroy(agentInstance);
-                        bloodTimeStart = Time.time;
-                        chosenSpawn = spawnPoints[Random.Range(0, spawnPoints.Count)].transform;
-                        agentInstance = Instantiate(Agent, chosenSpawn.position, Quaternion.identity);
-                        agentInstance.GetComponent<CustomerController>().target = target;
-                        destroyTimeStart = -1;
-                    }
+                }
+
+                // the burst sound should come ever so slightly before the rest of the effects
+                if (!specialSource.isPlaying && Time.time - destroyTimeStart >= (explosionInterval - 0.1f))
+                {
+                    specialSource.Play();
+
+                }
+
+                if (Time.time - destroyTimeStart >= explosionInterval)
+                {
+                        
+                    bloodParticles.Play();
+                    splatSource.Play();
+                    speakSource.Stop();
+
+                    Destroy(agentInstance);
+
+                    bloodTimeStart = Time.time;
+                    chosenSpawn = spawnPoints[Random.Range(0, spawnPoints.Count)].transform;
+                    agentInstance = Instantiate(Agent, chosenSpawn.position, Quaternion.identity);
+                    agentInstance.GetComponent<CustomerController>().target = target;
+                    destroyTimeStart = -1;
+
+                    explosionInterval = -1;
                 }
             }
+        }
             
             if(Time.time - bloodTimeStart >= 0.3f)
             {
@@ -76,5 +104,11 @@ public class AIManager : MonoBehaviour
 
         }
 
+    
+    AudioClip RandomExitSound()
+    {
+        return exitSounds[UnityEngine.Random.Range(0, exitSounds.Count)];
     }
+
+
 }
