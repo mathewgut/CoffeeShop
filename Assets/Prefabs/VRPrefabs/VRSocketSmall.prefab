@@ -115,5 +115,5 @@ MonoBehaviour:
   allowedInputs: []
   attachedItem: {fileID: 0}
   currentFuel: 0
-  maxFuel: 9
+  maxFuel: 3
   onFillSound: {fileID: 0}

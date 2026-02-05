@@ -692,7 +692,7 @@ MonoBehaviour:
   target: {fileID: 0}
   acceptedItemTag: coffee_cup
   minCoffeeCount: 1
-  maxCoffeeCount: 1
+  maxCoffeeCount: 3
   orderUI: {fileID: 4498986471775667480}
   orderQuantity: {fileID: 243126482980297585}
   orderComplete: 0

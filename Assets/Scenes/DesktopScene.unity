@@ -6387,6 +6387,7 @@ MonoBehaviour:
   Player: {fileID: 110649488}
   HoldDistance: 1.5
   throwForce: 300
+  isVR: 0
   heldItem: {fileID: 0}
 --- !u!54 &110649497
 Rigidbody:
@@ -38770,6 +38771,10 @@ PrefabInstance:
     - target: {fileID: 4079221176216328987, guid: ad328a6adb405b1428d6cc4707c2c4b0, type: 3}
       propertyPath: m_Layer
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5401470210783658511, guid: ad328a6adb405b1428d6cc4707c2c4b0, type: 3}
+      propertyPath: near clip plane
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 7298625271402481362, guid: ad328a6adb405b1428d6cc4707c2c4b0, type: 3}
       propertyPath: gravity

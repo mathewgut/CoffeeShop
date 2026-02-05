@@ -70,6 +70,8 @@ public class CustomerController : MonoBehaviour
             {
                 coffeeCount -= 1;
                 Destroy(collision.gameObject);
+                audioOutput.clip =  consumeSound;
+                audioOutput.Play();
                 CheckOrder();
             }
         }
